@@ -11,6 +11,10 @@
                         <p class="text-muted">Silakan login untuk melanjutkan</p>
                     </div>
 
+                    @if(session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
+
                     <form method="POST" action="{{ route('login') }}" class="pt-3">
                         @csrf
 
@@ -47,6 +51,16 @@
                             <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-medium auth-form-btn">
                                 LOGIN
                             </button>
+                        </div>
+
+                        <div class="text-center my-4">
+                            <span class="text-muted">atau</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <a href="{{ route('google.redirect') }}" class="btn btn-outline-danger btn-block btn-lg font-weight-medium">
+                                <i class="mdi mdi-google"></i> Login dengan Google
+                            </a>
                         </div>
 
                         <div class="text-center mt-4">

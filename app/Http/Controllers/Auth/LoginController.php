@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -36,5 +38,20 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
+    }
+
+    /**
+     * Override authenticated method to redirect to OTP verification
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        // Logout the user temporarily
+        Auth::logout();
+        
+        // Store user ID in session for OTP verification
+        session(['otp_user_id' => $user->id]);
+        
+        // Redirect to OTP page
+        return redirect()->route('otp.show');
     }
 }

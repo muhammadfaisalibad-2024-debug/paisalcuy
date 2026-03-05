@@ -45,4 +45,63 @@
         </div>
     </div>
 </div>
+
+{{-- PDF Section --}}
+<div class="row">
+    <div class="col-md-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="bg-gradient-warning p-2 rounded me-3">
+                        <i class="mdi mdi-certificate text-white" style="font-size:1.5rem"></i>
+                    </span>
+                    <div>
+                        <h4 class="card-title mb-0">Sertifikat Keanggotaan</h4>
+                        <p class="text-muted small mb-0">Landscape A4 &bull; Data koleksi buku terbaru</p>
+                    </div>
+                </div>
+                <p class="card-description">
+                    Sertifikat keanggotaan perpustakaan digital yang memuat statistik koleksi
+                    dan 5 buku terbaru.
+                </p>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ route('pdf.sertifikat') }}" target="_blank" class="btn btn-outline-warning">
+                        <i class="mdi mdi-eye"></i> Preview
+                    </a>
+                    <a href="{{ route('pdf.sertifikat.download') }}" class="btn btn-warning text-white">
+                        <i class="mdi mdi-download"></i> Download PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="bg-gradient-success p-2 rounded me-3">
+                        <i class="mdi mdi-email-open text-white" style="font-size:1.5rem"></i>
+                    </span>
+                    <div>
+                        <h4 class="card-title mb-0">Undangan Peluncuran Buku</h4>
+                        <p class="text-muted small mb-0">Portrait A4 &bull; Daftar koleksi &amp; kategori</p>
+                    </div>
+                </div>
+                <p class="card-description">
+                    Surat undangan resmi acara peluncuran koleksi buku digital, memuat
+                    daftar buku terbaru dan ringkasan per kategori.
+                </p>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ route('pdf.undangan') }}" target="_blank" class="btn btn-outline-success">
+                        <i class="mdi mdi-eye"></i> Preview
+                    </a>
+                    <a href="{{ route('pdf.undangan.download') }}" class="btn btn-success">
+                        <i class="mdi mdi-download"></i> Download PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
