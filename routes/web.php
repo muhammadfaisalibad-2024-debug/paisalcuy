@@ -16,10 +16,20 @@ Route::post('otp/verify', [App\Http\Controllers\Auth\OtpController::class, 'veri
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    
+
+    // Demo Select & Select2 (Tugas 4) — HARUS di atas Route::resource('kategori')
+    // agar tidak ditangkap oleh route kategori/{kategori} (show)
+    Route::get('kategori/select-demo', function () {
+        return view('kategori.select-demo');
+    })->name('kategori.select-demo');
+
     Route::resource('kategori', App\Http\Controllers\KategoriController::class);
-    
     Route::resource('buku', App\Http\Controllers\BukuController::class);
+
+    // Demo CRUD DataTables (Tugas 2B + 3B) — tampilkan view buku/index-datatables
+    Route::get('buku-datatables', function () {
+        return view('buku.index-datatables');
+    })->name('buku.datatables');
 
     // PDF routes - tampil di browser
     Route::get('pdf/sertifikat', [App\Http\Controllers\PdfController::class, 'sertifikat'])->name('pdf.sertifikat');

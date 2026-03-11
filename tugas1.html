@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas 1 — Spinner Submit | Koleksi Buku</title>
+    <!-- Bootstrap 5 CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <!-- Header kecil penanda proyek -->
+            <p class="text-muted text-center mb-2 small">
+                <span class="badge bg-secondary">Sistem Koleksi Buku</span>
+            </p>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">&#128218; Formulir Pengajuan Koleksi Buku</h5>
+                </div>
+                <div class="card-body">
+
+                    <!--
+                        Form dengan atribut novalidate:
+                        Mencegah browser menjalankan validasi bawaan saat submit.
+                        Validasi dikontrol manual via checkValidity() dan reportValidity()
+                        melalui JavaScript di bawah.
+                    -->
+                    <form id="formPengajuan" novalidate>
+
+                        <!-- Input Judul Buku -->
+                        <div class="mb-3">
+                            <label for="inputJudul" class="form-label fw-semibold">
+                                Judul Buku <span class="text-danger">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="inputJudul"
+                                placeholder="Masukkan judul buku yang diajukan"
+                                required
+                            >
+                        </div>
+
+                        <!-- Input Nama Pengaju -->
+                        <div class="mb-3">
+                            <label for="inputNama" class="form-label fw-semibold">
+                                Nama Pengaju <span class="text-danger">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="inputNama"
+                                placeholder="Masukkan nama lengkap Anda"
+                                required
+                            >
+                        </div>
+
+                        <!-- Input Email Pengaju -->
+                        <div class="mb-3">
+                            <label for="inputEmail" class="form-label fw-semibold">
+                                Email <span class="text-danger">*</span>
+                            </label>
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="inputEmail"
+                                placeholder="contoh@email.com"
+                                required
+                            >
+                        </div>
+
+                        <!-- Textarea Keterangan -->
+                        <div class="mb-3">
+                            <label for="inputKeterangan" class="form-label fw-semibold">
+                                Keterangan / Alasan Pengajuan <span class="text-danger">*</span>
+                            </label>
+                            <textarea
+                                class="form-control"
+                                id="inputKeterangan"
+                                rows="4"
+                                placeholder="Jelaskan alasan mengapa buku ini perlu ditambahkan ke koleksi..."
+                                required
+                            ></textarea>
+                        </div>
+
+                    </form>
+
+                    <!--
+                        Tombol Submit berada DI LUAR tag <form>.
+                        type="button" — tidak memicu submit event bawaan browser.
+                        Logika submit dikontrol penuh oleh JavaScript.
+                    -->
+                    <button type="button" id="btnSubmit" class="btn btn-primary w-100 mt-1">
+                        Kirim Pengajuan
+                    </button>
+
+                </div>
+            </div>
+
+            <p class="text-center text-muted small mt-3">
+                <span class="text-danger">*</span> Wajib diisi
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS Bundle (termasuk Popper.js) via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ============================================================
+    // REFERENSI ELEMEN DOM
+    // ============================================================
+    const form      = document.getElementById('formPengajuan');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    // ============================================================
+    // EVENT LISTENER: Tombol "Kirim Pengajuan" di-klik
+    // ============================================================
+    btnSubmit.addEventListener('click', function () {
+
+        // LANGKAH 1: Cek apakah semua field sudah memenuhi aturan validasi (required, type, dll)
+        // checkValidity() mengembalikan true jika semua valid, false jika ada yang kosong/salah
+        if (!form.checkValidity()) {
+            // Tampilkan bubble pesan error bawaan browser pada field yang tidak valid
+            form.reportValidity();
+            return; // Hentikan eksekusi, tidak lanjut ke proses pengiriman
+        }
+
+        // LANGKAH 2: Semua valid — ubah tampilan tombol menjadi spinner + teks "Mengirim..."
+        // Menggunakan class Bootstrap: spinner-border spinner-border-sm
+        btnSubmit.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2"
+                  role="status" aria-hidden="true"></span>
+            Mengirim Pengajuan...
+        `;
+
+        // LANGKAH 3: Disable tombol untuk mencegah pengiriman ganda (double submit)
+        btnSubmit.disabled = true;
+
+        // LANGKAH 4: Simulasi pengiriman data ke server selama 3 detik
+        setTimeout(function () {
+
+            // Setelah 3 detik: reset semua field form menjadi kosong
+            form.reset();
+
+            // Kembalikan teks tombol ke kondisi awal
+            btnSubmit.innerHTML = 'Kirim Pengajuan';
+
+            // Aktifkan kembali tombol agar bisa digunakan lagi
+            btnSubmit.disabled = false;
+
+            // Tampilkan notifikasi sukses menggunakan alert Bootstrap
+            const alertBox = document.createElement('div');
+            alertBox.className = 'alert alert-success alert-dismissible fade show mt-3';
+            alertBox.role = 'alert';
+            alertBox.innerHTML = `
+                <strong>Berhasil!</strong> Pengajuan koleksi buku telah dikirim.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+            `;
+            // Sisipkan notifikasi di atas form
+            form.parentElement.insertBefore(alertBox, form);
+
+        }, 3000); // 3000 ms = 3 detik
+    });
+</script>
+
+</body>
+</html>

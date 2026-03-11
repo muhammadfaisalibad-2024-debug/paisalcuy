@@ -1,7 +1,13 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-{{-- Tugas 2A + 3A: CRUD DOM-only (data tidak ke database) + Modal Update/Delete --}}
-@section('title', 'Daftar Buku (Demo CRUD)')
+{{-- Tugas 2B + 3B: CRUD DOM-only dengan DataTables + Modal Update/Delete --}}
+@section('title', 'Daftar Buku (DataTables)')
+
+@push('styles')
+    {{-- DataTables Bootstrap 5 CSS --}}
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+@endpush
 
 @section('content')
 <div class="row">
@@ -9,22 +15,23 @@
         <div class="page-header">
             <h3 class="page-title">
                 <span class="page-title-icon bg-gradient-primary text-white me-2">
-                    <i class="mdi mdi-book-open-page-variant"></i>
-                </span> Koleksi Buku — Demo CRUD
+                    <i class="mdi mdi-table-search"></i>
+                </span> Koleksi Buku — DataTables
             </h3>
             <nav aria-label="breadcrumb">
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('/') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Buku</li>
+                    <li class="breadcrumb-item"><a href="{{ route('buku.index') }}">Buku</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">DataTables</li>
                 </ul>
             </nav>
         </div>
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════ --}}
-{{-- BARIS UTAMA: Form Input (kiri) + Tabel Data (kanan) --}}
-{{-- ══════════════════════════════════════════════════ --}}
+{{-- ══════════════════════════════════════════════════════════ --}}
+{{-- BARIS UTAMA: Form Input (kiri) + Tabel DataTables (kanan) --}}
+{{-- ══════════════════════════════════════════════════════════ --}}
 <div class="row">
 
     {{-- ===== CARD FORM INPUT (kiri) ===== --}}
@@ -36,7 +43,7 @@
 
                 {{--
                     Form dengan novalidate: validasi dikontrol manual via JS.
-                    Data tidak dikirim ke server, hanya ditambahkan ke DOM tabel.
+                    Data tidak dikirim ke server, hanya ke DataTables melalui API.
                 --}}
                 <form id="formBuku" novalidate>
 
@@ -71,7 +78,7 @@
         </div>
     </div>
 
-    {{-- ===== CARD TABEL DATA (kanan) ===== --}}
+    {{-- ===== CARD TABEL DATATABLES (kanan) ===== --}}
     <div class="col-md-8 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
@@ -81,25 +88,22 @@
                 </p>
 
                 <div class="table-responsive">
-                    {{-- table-hover memberi efek warna saat hover --}}
-                    <table class="table table-hover" id="tabelBuku">
+                    {{--
+                        Tabel diinisialisasi oleh DataTables.
+                        thead WAJIB ada agar DataTables mengenali kolom.
+                    --}}
+                    <table class="table table-hover" id="tabelBuku" style="width:100%">
                         <thead class="table-dark">
                             <tr>
-                                <th width="45">No</th>
-                                <th width="110">ID Buku</th>
-                                <th width="110">Kode</th>
+                                <th>No</th>
+                                <th>ID Buku</th>
+                                <th>Kode</th>
                                 <th>Judul</th>
                                 <th>Pengarang</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyBuku">
-                            {{-- Baris kosong awal — akan disembunyikan saat ada data --}}
-                            <tr id="emptyRow">
-                                <td colspan="5" class="text-center text-muted py-4">
-                                    <i class="mdi mdi-book-open-page-variant mdi-36px d-block mb-1"></i>
-                                    Belum ada data buku
-                                </td>
-                            </tr>
+                        <tbody>
+                            {{-- DataTables akan mengisi tbody ini secara dinamis --}}
                         </tbody>
                     </table>
                 </div>
@@ -110,9 +114,9 @@
 
 </div>
 
-{{-- ══════════════════════════════════════════════════════════════════ --}}
-{{-- TUGAS 3A: MODAL EDIT / HAPUS (ditampilkan saat row tabel diklik) --}}
-{{-- ══════════════════════════════════════════════════════════════════ --}}
+{{-- ════════════════════════════════════════════════════════════════════ --}}
+{{-- TUGAS 3B: MODAL EDIT / HAPUS (ditampilkan saat row DataTables diklik) --}}
+{{-- ════════════════════════════════════════════════════════════════════ --}}
 <div class="modal fade" id="modalEditBuku" tabindex="-1" aria-labelledby="judulModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -131,7 +135,7 @@
                 --}}
                 <form id="formModal" novalidate>
 
-                    {{-- ID Buku — hanya tampil, tidak bisa diedit --}}
+                    {{-- ID Buku — readonly --}}
                     <div class="form-group mb-3">
                         <label for="modalId" class="form-label">ID Buku</label>
                         <input type="text" class="form-control bg-light" id="modalId" readonly>
@@ -165,15 +169,15 @@
             </div>
 
             <div class="modal-footer">
-                {{-- Tombol Batal — menutup modal tanpa perubahan --}}
+                {{-- Tombol Batal --}}
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="mdi mdi-close"></i> Batal
                 </button>
-                {{-- Tombol Hapus — menghapus baris dari tabel --}}
+                {{-- Tombol Hapus --}}
                 <button type="button" id="btnHapus" class="btn btn-danger">
                     <i class="mdi mdi-delete"></i> Hapus
                 </button>
-                {{-- Tombol Ubah — menyimpan perubahan ke baris terpilih --}}
+                {{-- Tombol Ubah --}}
                 <button type="button" id="btnUbah" class="btn btn-primary">
                     <i class="mdi mdi-content-save"></i> Ubah
                 </button>
@@ -186,27 +190,31 @@
 @endsection
 
 @push('scripts')
+{{-- jQuery 3.x (wajib ada sebelum DataTables) --}}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+{{-- DataTables JS --}}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+{{-- DataTables Bootstrap 5 Integration --}}
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 <script>
     // ============================================================
     // VARIABEL GLOBAL
     // ============================================================
-    // Data buku disimpan sebagai array of object agar bisa di-persist ke localStorage
-    // Format tiap item: { nomor, kode, judul, pengarang }
-    let dataBuku    = [];
-    let nomorUrut   = 1;      // Counter nomor urut dan ID otomatis
-    let selectedRow = null;   // Referensi baris tabel yang sedang dipilih (untuk edit/hapus)
+    let dataBuku    = [];     // Array penyimpanan data — di-persist ke localStorage
+    let nomorUrut   = 1;      // Counter nomor urut & generate ID buku
+    let selectedRow = null;   // Referensi baris DataTables yang sedang dipilih
+    let dataTable   = null;   // Instance DataTables
 
-    // Kunci localStorage — gunakan nama unik agar tidak bentrok dengan halaman lain
-    const STORAGE_KEY = 'koleksi_buku_demo_crud';
+    // Kunci localStorage — unik per halaman agar tidak bentrok
+    const STORAGE_KEY = 'koleksi_buku_datatables';
 
-    // --- Referensi elemen DOM ---
+    // --- Referensi elemen DOM (form input) ---
     const formBuku       = document.getElementById('formBuku');
     const btnTambah      = document.getElementById('btnTambah');
     const inputKode      = document.getElementById('inputKode');
     const inputJudul     = document.getElementById('inputJudul');
     const inputPengarang = document.getElementById('inputPengarang');
-    const tbodyBuku      = document.getElementById('tbodyBuku');
-    const emptyRow       = document.getElementById('emptyRow');
 
     // --- Referensi elemen modal ---
     const formModal      = document.getElementById('formModal');
@@ -226,7 +234,7 @@
     // ============================================================
 
     /**
-     * Membuat ID Buku otomatis berformat BK-XXX berdasarkan nomor urut.
+     * Membuat ID Buku otomatis berformat BK-XXX.
      * Contoh: 1 → "BK-001", 12 → "BK-012"
      */
     function generateId(nomor) {
@@ -234,80 +242,106 @@
     }
 
     // ============================================================
-    // FUNGSI LOCALSTORAGE — Simpan & Muat Data
+    // FUNGSI LOCALSTORAGE
     // ============================================================
 
     /**
-     * Menyimpan array dataBuku ke localStorage dalam format JSON.
-     * Dipanggil setiap kali data berubah (tambah / ubah / hapus).
+     * Simpan array dataBuku ke localStorage (format JSON).
+     * Dipanggil setiap kali data berubah: tambah / ubah / hapus.
      */
     function simpanKeStorage() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(dataBuku));
     }
 
     /**
-     * Memuat data dari localStorage dan me-render ulang seluruh tabel.
-     * Dipanggil satu kali saat halaman pertama kali dimuat (DOMContentLoaded).
+     * Muat data dari localStorage dan masukkan ke DataTables via API.
+     * Dipanggil sekali saat DataTables selesai diinisialisasi.
      */
     function muatDariStorage() {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return; // Belum ada data tersimpan
+        if (!raw) return;
 
         dataBuku = JSON.parse(raw);
 
-        // Tentukan nomorUrut selanjutnya = nomor tertinggi yang ada + 1
         if (dataBuku.length > 0) {
-            nomorUrut = Math.max(...dataBuku.map(function (d) { return d.nomor; })) + 1;
+            // Tentukan nomorUrut berikutnya dari nomor tertinggi yang tersimpan
+            nomorUrut = Math.max.apply(null, dataBuku.map(function (d) { return d.nomor; })) + 1;
+
+            // Masukkan semua data ke DataTables sekaligus, lalu draw sekali
+            dataBuku.forEach(function (item) {
+                dataTable.row.add([
+                    item.nomor,
+                    generateId(item.nomor),
+                    item.kode,
+                    item.judul,
+                    item.pengarang
+                ]);
+            });
+            dataTable.draw();
         }
-
-        // Render ulang semua baris dari data yang dimuat
-        dataBuku.forEach(function (item) {
-            renderBaris(item.nomor, item.kode, item.judul, item.pengarang);
-        });
     }
 
     // ============================================================
-    // FUNGSI RENDER — Menambah Baris ke DOM Tabel
+    // INISIALISASI DATATABLES + MUAT DATA
     // ============================================================
+    $(document).ready(function () {
 
-    /**
-     * Me-render satu baris ke dalam <tbody> tabel.
-     * Dipisah dari tambahBaris() agar bisa dipanggil ulang saat muat dari storage.
-     * @param {number} nomor
-     * @param {string} kode
-     * @param {string} judul
-     * @param {string} pengarang
-     */
-    function renderBaris(nomor, kode, judul, pengarang) {
-        // Sembunyikan baris "Belum ada data"
-        emptyRow.style.display = 'none';
-
-        const tr = document.createElement('tr');
-        tr.style.cursor = 'pointer';
-        tr.setAttribute('data-nomor', nomor); // Gunakan data-nomor untuk tracking
-
-        tr.innerHTML = `
-            <td>${nomor}</td>
-            <td><span class="badge badge-dark">${generateId(nomor)}</span></td>
-            <td>${kode}</td>
-            <td><strong>${judul}</strong></td>
-            <td>${pengarang}</td>
-        `;
-
-        // Klik baris → buka modal edit
-        tr.addEventListener('click', function () {
-            bukaModalEdit(this);
+        /**
+         * Inisialisasi DataTables dengan bahasa Indonesia.
+         */
+        dataTable = $('#tabelBuku').DataTable({
+            language: {
+                search:       'Cari:',
+                lengthMenu:   'Tampilkan _MENU_ data',
+                info:         'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                infoEmpty:    'Tidak ada data yang ditampilkan',
+                infoFiltered: '(difilter dari _MAX_ total data)',
+                zeroRecords:  'Data tidak ditemukan',
+                emptyTable:   'Belum ada data buku',
+                paginate: {
+                    first:    'Pertama',
+                    last:     'Terakhir',
+                    next:     'Berikutnya',
+                    previous: 'Sebelumnya'
+                }
+            },
+            columnDefs: [
+                { orderable: false, targets: 0 }
+            ]
         });
 
-        tbodyBuku.appendChild(tr);
-    }
+        // Muat data dari localStorage setelah DataTables siap
+        muatDariStorage();
+
+        // ============================================================
+        // EVENT KLIK BARIS — Event Delegation (wajib untuk DataTables)
+        // ============================================================
+        /**
+         * Gunakan event delegation agar event tetap aktif setelah
+         * DataTables me-render ulang DOM (paginasi / sorting).
+         */
+        $('#tabelBuku tbody').on('click', 'tr', function () {
+            selectedRow = this;
+
+            // --- DATATABLES API: Ambil array data baris yang diklik ---
+            var rowData = dataTable.row(this).data();
+            if (!rowData) return;
+
+            // rowData: [No, ID Buku, Kode, Judul, Pengarang]
+            modalId.value        = rowData[1];
+            modalKode.value      = rowData[2];
+            modalJudul.value     = rowData[3];
+            modalPengarang.value = rowData[4];
+
+            bsModal.show();
+        });
+    });
 
     // ============================================================
-    // TUGAS 2A — EVENT LISTENER: Klik tombol "Tambah Buku"
+    // EVENT LISTENER: Klik tombol "Tambah Buku"
     // ============================================================
     btnTambah.addEventListener('click', function () {
 
-        // LANGKAH 1: Validasi semua field form
         if (!formBuku.checkValidity()) {
             formBuku.reportValidity();
             return;
@@ -318,7 +352,7 @@
         const pengarang = inputPengarang.value.trim();
         const nomor     = nomorUrut;
 
-        // LANGKAH 2: Ubah tampilan tombol menjadi spinner
+        // Ubah tombol menjadi spinner
         btnTambah.innerHTML = `
             <span class="spinner-border spinner-border-sm me-2"
                   role="status" aria-hidden="true"></span>
@@ -326,15 +360,21 @@
         `;
         btnTambah.disabled = true;
 
-        // LANGKAH 3: Simulasi proses penyimpanan (1.5 detik)
+        // Simulasi proses penyimpanan (1.5 detik)
         setTimeout(function () {
 
-            // Tambahkan ke array data dan simpan ke localStorage
+            // Simpan ke array dan localStorage
             dataBuku.push({ nomor: nomor, kode: kode, judul: judul, pengarang: pengarang });
             simpanKeStorage();
 
-            // Render baris baru ke tabel
-            renderBaris(nomor, kode, judul, pengarang);
+            // --- DATATABLES API: Tambah baris baru ke tabel ---
+            dataTable.row.add([
+                nomor,
+                generateId(nomor),
+                kode,
+                judul,
+                pengarang
+            ]).draw();
 
             nomorUrut++;
             formBuku.reset();
@@ -346,27 +386,6 @@
     });
 
     // ============================================================
-    // TUGAS 3A — Fungsi buka modal edit
-    // ============================================================
-
-    /**
-     * Membaca data dari sel baris yang diklik, lalu mengisi form modal.
-     * @param {HTMLTableRowElement} row - Baris tabel yang diklik
-     */
-    function bukaModalEdit(row) {
-        selectedRow = row;
-
-        // Ambil data dari sel (0=No, 1=ID, 2=Kode, 3=Judul, 4=Pengarang)
-        const cells = row.querySelectorAll('td');
-        modalId.value        = cells[1].textContent.trim();
-        modalKode.value      = cells[2].textContent.trim();
-        modalJudul.value     = cells[3].textContent.trim();
-        modalPengarang.value = cells[4].textContent.trim();
-
-        bsModal.show();
-    }
-
-    // ============================================================
     // EVENT LISTENER: Klik tombol "Hapus" di modal
     // ============================================================
     btnHapus.addEventListener('click', function () {
@@ -374,23 +393,19 @@
         const konfirmasi = confirm('Yakin ingin menghapus buku "' + modalJudul.value + '"?');
 
         if (konfirmasi) {
-            // Cari nomor baris yang dihapus untuk sinkronisasi localStorage
-            const nomorHapus = parseInt(selectedRow.getAttribute('data-nomor'));
+            // Cari nomor baris dari data DataTables untuk sinkronisasi localStorage
+            const rowData    = dataTable.row(selectedRow).data();
+            const nomorHapus = rowData[0]; // Kolom 0 = nomor urut
 
-            // Hapus dari DOM
-            selectedRow.remove();
-            selectedRow = null;
+            // --- DATATABLES API: Hapus baris dari DataTables ---
+            dataTable.row(selectedRow).remove().draw();
 
-            // Hapus dari array dataBuku dan simpan ulang ke localStorage
+            // Hapus dari array dan simpan ulang ke localStorage
             dataBuku = dataBuku.filter(function (d) { return d.nomor !== nomorHapus; });
             simpanKeStorage();
 
+            selectedRow = null;
             bsModal.hide();
-
-            // Tampilkan baris kosong jika tidak ada data tersisa
-            if (tbodyBuku.querySelectorAll('tr:not(#emptyRow)').length === 0) {
-                emptyRow.style.display = '';
-            }
         }
     });
 
@@ -399,24 +414,27 @@
     // ============================================================
     btnUbah.addEventListener('click', function () {
 
-        // LANGKAH 1: Validasi form modal
         if (!formModal.checkValidity()) {
             formModal.reportValidity();
             return;
         }
 
-        const nomorEdit  = parseInt(selectedRow.getAttribute('data-nomor'));
+        const rowData    = dataTable.row(selectedRow).data();
+        const nomorEdit  = rowData[0]; // Kolom 0 = nomor urut
         const kodeBaru   = modalKode.value.trim();
         const judulBaru  = modalJudul.value.trim();
         const pengBaru   = modalPengarang.value.trim();
 
-        // LANGKAH 2: Update sel pada baris terpilih di DOM
-        const cells = selectedRow.querySelectorAll('td');
-        cells[2].textContent = kodeBaru;
-        cells[3].innerHTML   = `<strong>${judulBaru}</strong>`;
-        cells[4].textContent = pengBaru;
+        // --- DATATABLES API: Update data baris ---
+        dataTable.row(selectedRow).data([
+            nomorEdit,
+            modalId.value,  // ID Buku tetap (readonly)
+            kodeBaru,
+            judulBaru,
+            pengBaru
+        ]).draw();
 
-        // Sinkronisasi perubahan ke array dataBuku dan localStorage
+        // Sinkronisasi perubahan ke array dan localStorage
         const idx = dataBuku.findIndex(function (d) { return d.nomor === nomorEdit; });
         if (idx !== -1) {
             dataBuku[idx].kode      = kodeBaru;
@@ -427,14 +445,6 @@
 
         selectedRow = null;
         bsModal.hide();
-    });
-
-    // ============================================================
-    // INISIALISASI — Muat data dari localStorage saat halaman dibuka
-    // Sehingga data tetap ada meski tab berpindah atau halaman di-refresh
-    // ============================================================
-    document.addEventListener('DOMContentLoaded', function () {
-        muatDariStorage();
     });
 </script>
 @endpush

@@ -28,10 +28,24 @@
             </a>
         </li>
         
-        <li class="nav-item {{ Request::is('buku*') ? 'active' : '' }}">
+        <li class="nav-item {{ Request::is('buku') ? 'active' : '' }}">
             <a class="nav-link" href="{{ url('/buku') }}">
                 <span class="menu-title">Buku</span>
                 <i class="mdi mdi-book-open-page-variant menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item {{ Request::is('buku-datatables') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('buku.datatables') }}">
+                <span class="menu-title">Buku (DataTables)</span>
+                <i class="mdi mdi-table-search menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item {{ Request::is('kategori/select-demo') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('kategori.select-demo') }}">
+                <span class="menu-title">Demo Select</span>
+                <i class="mdi mdi-format-list-bulleted menu-icon"></i>
             </a>
         </li>
 
