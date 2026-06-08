@@ -105,5 +105,22 @@
                 <i class="mdi mdi-email-open menu-icon"></i>
             </a>
         </li>
+        <li class="nav-item nav-category">
+                <span class="nav-item-head">NFC</span>
+        </li>
+
+        <li class="nav-item {{ Request::is('nfc/scanner') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/nfc/scanner') }}">
+                <span class="menu-title">NFC Scanner</span>
+                <i class="mdi mdi-cellphone-nfc menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item {{ Request::is('nfc/attendance*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/nfc/attendance/list') }}">
+                <span class="menu-title">Absensi NFC</span>
+                <i class="mdi mdi-clipboard-check menu-icon"></i>
+            </a>
+        </li>
     </ul>
 </nav>
