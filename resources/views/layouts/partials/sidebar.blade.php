@@ -117,10 +117,52 @@
         </li>
 
         <li class="nav-item {{ Request::is('nfc/attendance*') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/nfc/attendance/list') }}">
-                <span class="menu-title">Absensi NFC</span>
-                <i class="mdi mdi-clipboard-check menu-icon"></i>
-            </a>
-        </li>
+        <a class="nav-link" href="{{ route('nfc.attendance.list') }}">
+            <span class="menu-title">Absensi NFC</span>
+            <i class="mdi mdi-clipboard-check menu-icon"></i>
+        </a>
+         </li>
+        
+        <li class="nav-item nav-category">
+        <span class="nav-item-head">Geolocation</span>
+     </li>
+
+    <li class="nav-item {{ Request::is('kunjungan-toko*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('kunjungan.index') }}">
+            <span class="menu-title">Kunjungan Toko</span>
+            <i class="mdi mdi-map-marker-radius menu-icon"></i>
+        </a>
+    </li>
+
+    <li class="nav-item {{ Request::is('toko*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('toko.index') }}">
+            <span class="menu-title">Data Toko</span>
+            <i class="mdi mdi-store menu-icon"></i>
+        </a>
+    </li>
+    <li class="nav-item nav-category">
+    <span class="nav-item-head">Server Sent Events</span>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="/guest" target="_blank">
+            <span class="menu-title">Guest Antrian</span>
+            <i class="mdi mdi-account-plus menu-icon"></i>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="/admin-antrian" target="_blank">
+            <span class="menu-title">Admin Antrian</span>
+            <i class="mdi mdi-account-tie menu-icon"></i>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="/papan" target="_blank">
+            <span class="menu-title">Papan Antrian</span>
+            <i class="mdi mdi-monitor-dashboard menu-icon"></i>
+        </a>
+    </li>
     </ul>
 </nav>

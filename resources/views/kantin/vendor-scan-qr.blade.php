@@ -29,7 +29,7 @@
                 <h4 class="card-title mb-3">Scanner QR</h4>
                 <p class="text-muted">Arahkan kamera ke QR code yang menampilkan ID pesanan customer. Scanner akan berbunyi beep lalu berhenti otomatis.</p>
 
-                <div id="reader" style="width:100%; max-width: 480px;"></div>
+                <video id="reader" style="width:100%;max-width:480px;"></video>
 
                 <div class="mt-3 d-flex gap-2 flex-wrap">
                     <button type="button" id="btnStartScan" class="btn btn-success">
@@ -212,7 +212,7 @@
             const devices = await codeReader.listVideoInputDevices();
             const deviceId = devices.length > 0 ? devices[0].deviceId : undefined;
 
-            controls = await codeReader.decodeFromVideoDevice(deviceId, readerElement, async (result, err, controller) => {
+            controls = await codeReader.decodeFromVideoDevice( deviceId, 'reader', async (result, err, controller) => {
                 if (!result || scanLocked) {
                     return;
                 }

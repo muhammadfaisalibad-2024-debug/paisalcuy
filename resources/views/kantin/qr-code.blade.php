@@ -44,7 +44,11 @@
                 <div class="card-body text-center">
                     <h5 class="card-title mb-3">QR Code</h5>
                     @if($qrCodeUrl)
-                        <img src="{{ $qrCodeUrl }}" alt="QR Pesanan" class="img-fluid mb-3" style="max-width: 280px;">
+                        <img src="{{ asset('storage/qrcodes/pesanan-8.png') }}"
+                            alt="QR Pesanan"
+                            class="img-fluid mb-3"
+                            style="max-width: 280px;">
+
                         <div class="small text-muted mb-3">Scan QR ini di halaman vendor untuk melihat detail pesanan.</div>
                         <a href="{{ $qrCodeUrl }}" class="btn btn-dark" target="_blank" rel="noopener">Buka Gambar QR</a>
                     @else

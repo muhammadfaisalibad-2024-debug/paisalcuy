@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\TokoController;
+use App\Http\Controllers\KunjunganController;
+use App\Http\Controllers\AntrianController;
 
 Auth::routes();
 
@@ -42,7 +44,25 @@ Route::get('midtrans/callback/pending', [App\Http\Controllers\MidtransCallbackCo
 
 // Midtrans Webhook Notification (dari server Midtrans)
 Route::post('midtrans/notification', [App\Http\Controllers\MidtransNotificationController::class, 'handleNotification'])->name('midtrans.notification');
+Route::get(
+    '/guest',
+    [AntrianController::class,'guest']
+)->name('antrian.guest');
 
+Route::post(
+    '/guest',
+    [AntrianController::class,'daftar']
+)->name('antrian.daftar');
+
+Route::get(
+    '/papan',
+    [AntrianController::class,'papan']
+)->name('antrian.papan');
+
+Route::get(
+    '/sse/antrian',
+    [AntrianController::class,'stream']
+)->name('antrian.stream');
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -87,4 +107,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('kantin/vendor/pesanan-lunas', [App\Http\Controllers\KantinVendorController::class, 'pesananLunas'])->name('kantin.vendor.pesanan-lunas');
     Route::get('kantin/vendor/scan-qr', [App\Http\Controllers\KantinVendorController::class, 'scanQrView'])->name('kantin.vendor.scan-qr');
     Route::get('kantin/vendor/api/pesanan/{idpesanan}', [App\Http\Controllers\KantinVendorController::class, 'scanPesanan'])->name('kantin.vendor.api.pesanan');
+    Route::get(
+    '/admin-antrian',
+    [AntrianController::class,'admin']
+    )->name('antrian.admin');
+
+    Route::post(
+        '/antrian/panggil',
+        [AntrianController::class,'panggil']
+    )->name('antrian.panggil');
+    Route::get('/toko/{id}/qr',
+        [TokoController::class,'qr']
+        )->name('toko.qr');
+    Route::resource('toko', TokoController::class);
+
+    Route::get('/kunjungan-toko',
+        [KunjunganController::class,'index'])
+        ->name('kunjungan.index');
+
+    Route::post('/kunjungan-toko',
+        [KunjunganController::class,'store'])
+        ->name('kunjungan.store');
 });

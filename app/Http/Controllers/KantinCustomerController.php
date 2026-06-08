@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
 
 class KantinCustomerController extends Controller
 {
@@ -440,21 +441,23 @@ class KantinCustomerController extends Controller
         return $req->post($baseUrl . $path, $payload);
     }
 
-    private function ensureQrCode(Pesanan $pesanan): void
+   public function ensureQrCode($pesanan)
     {
         if ($pesanan->qr_code_path) {
             return;
         }
 
-        $result = Builder::create()
-            ->data((string) $pesanan->idpesanan)
-            ->size(420)
-            ->margin(10)
-            ->build();
+        $result = new Builder(
+        writer: new PngWriter()
+        );
 
+        $result = $result->build(
+        data: (string) $pesanan->idpesanan
+        );
         $filename = 'qrcodes/pesanan-' . $pesanan->idpesanan . '.png';
         Storage::disk('public')->put($filename, $result->getString());
 
+        // Update path di database
         $pesanan->update(['qr_code_path' => $filename]);
     }
-}
+    }
